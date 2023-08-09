@@ -5,11 +5,35 @@ import { Header } from "@/components/Header";
 import { Task } from "@/components/Task";
 import { TaskInput } from "@/components/TaskInput";
 import { nanoid } from "nanoid";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Todolist() {
   //tasks = array of {id: string, title: string, complete: boolean}
   const [tasks, setTasks] = useState([]);
+  const[isFirstLoad , setisFirstLoad] = useState(true)
+
+  useEffect(()=>{
+    if(isFirstLoad){
+      setisFirstLoad(false);
+      return;
+    }
+    //console.log("HEE DUM เปลี่ยน");
+    const strTasks = JSON.stringify(tasks);
+    //console.log(strTasks)
+    localStorage.setItem("tasks",strTasks);
+  },[tasks])
+
+  useEffect(()=>{
+    
+    const strTasks = localStorage.getItem("tasks")
+    if(strTasks === null){
+      setTasks([]);
+      return;
+    }
+     const loadedTasks = JSON.parse(strTasks);
+     setTasks(loadedTasks);
+    
+  },[]);
 
   const addTask = (newTaskTitle) => {
     const newTask = { id: nanoid(), title: newTaskTitle, completed: false };
